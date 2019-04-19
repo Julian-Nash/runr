@@ -1,5 +1,3 @@
-#!env/bin/python
-
 import click
 import rcssmin
 import rjsmin
@@ -7,6 +5,7 @@ import sass
 
 import os
 import time
+
 
 """
 pip install click rcssmin rjsmin libsass black bandit
@@ -100,12 +99,13 @@ class Runner:
                 self.src_files_not_found.append(source)
                 self.tasks_failed += 1
 
-    def format_code(self, path):
+    def black(self, path):
         click.secho("\nFormatting with black")
         click.secho("--------------------")
         os.system(f"black {self.black_options} {path}")
 
     def bandit(self, path):
+        # TODO
         click.secho("\nRunning Bandit")
         click.secho("--------------------")
         # os.system(f"bandit {self.bandit_options} {path}")
@@ -130,9 +130,9 @@ class Runner:
 @click.command()
 @click.option("-c", "--compile", help="Compile SCSS to CSS", type=click.Choice(["scss"]))
 @click.option("-m", "--minify", help="Minify files", type=click.Choice(["css", "js", "all"]))
-@click.option("-f", "--fmt", help="Run Black Python linter")
-@click.option("-b", "--bandit", help="Run Bandit security linter")
-def runr(compile=None, minify=None, fmt=None, bandit=None):
+@click.option("-f", "--black", help="Run Black Python linter", type=click.Path(exists=True))
+@click.option("-b", "--bandit", help="Run Bandit security linter", type=click.Path(exists=True))
+def runr(compile=None, minify=None, black=None, bandit=None):
 
     click.secho("\nRunner started", fg="magenta")
     click.secho("--------------------")
@@ -152,8 +152,8 @@ def runr(compile=None, minify=None, fmt=None, bandit=None):
             runner.minify_css()
             runner.minify_js()
 
-    if fmt:
-        runner.format_code(fmt)
+    if black:
+        runner.black(black)
 
     runner.report()
 
