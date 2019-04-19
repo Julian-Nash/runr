@@ -20,12 +20,15 @@ class Runner:
     dest_files_not_found = []
 
     black_options = "--line-length 120 --exclude env"
-    # bandit_options = "" :TODO
-
-    def __init__(self):
-        self.start = time.time()
+    bandit_options = ""
 
     def compile_scss(self):
+
+        """
+        Compiles SCSS to CSS.
+        Use the mapping object to map src > dest files.
+        dest files are over-written or created if they don't exist.
+        """
 
         mapping = {"app/static/scss/style.scss": "app/static/css/style.css"}
 
@@ -50,6 +53,12 @@ class Runner:
                 self.tasks_failed += 1
 
     def minify_css(self):
+
+        """
+        Minifies CSS files.
+        Use the mapping object to map src > dest files.
+        dest files are over-written but are not created, they must exist.
+        """
 
         mapping = {"app/static/css/style.css": "app/static/css/style.min.css"}
 
@@ -76,6 +85,12 @@ class Runner:
 
     def minify_js(self):
 
+        """
+        Minifies JavaScript files.
+        Use the mapping object to map src > dest files.
+        dest files are over-written but are not created, they must exist.
+        """
+
         mapping = {"app/static/js/app.js": "app/static/js/app.min.js"}
 
         click.secho("\nMinifying JavaScript")
@@ -100,17 +115,44 @@ class Runner:
                 self.tasks_failed += 1
 
     def black(self, path):
+
+        """
+        Formats Python code using the Black formatter.
+        Use Runner attribute black_options to set any Black options.
+        """
+
         click.secho("\nFormatting with black")
         click.secho("--------------------")
         os.system(f"black {self.black_options} {path}")
 
     def bandit(self, path):
-        # TODO
+        
+        """
+        Performs a Python security lint using Bandit.
+        Use Runner attribute bandit_options to set any Bandit options.
+        """
+
         click.secho("\nRunning Bandit")
         click.secho("--------------------")
-        # os.system(f"bandit {self.bandit_options} {path}")
+        os.system(f"bandit {self.bandit_options} {path}")
+
+    def start(self):
+
+        """
+        Sets the runner start time.
+        """
+
+        self.start = time.time()
+        click.secho("\nRunner started", fg="magenta")
+        click.secho("--------------------")
+
 
     def report(self):
+
+        """
+        Generates a report, called at the end of the task runner.
+        """
+
         click.secho("\nRunner report", fg="magenta")
         click.secho("--------------------")
         click.secho(f"Tasks complete: {self.tasks_complete}")
@@ -134,10 +176,13 @@ class Runner:
 @click.option("-b", "--bandit", help="Run Bandit security linter", type=click.Path(exists=True))
 def runr(compile=None, minify=None, black=None, bandit=None):
 
-    click.secho("\nRunner started", fg="magenta")
-    click.secho("--------------------")
-
+    """
+    Handles CLI options and values.
+    Use this function to parse input options, values and call Runner methods.
+    """
     runner = Runner()
+
+    runner.start()
 
     if compile:
         if compile == "scss":
@@ -154,6 +199,9 @@ def runr(compile=None, minify=None, black=None, bandit=None):
 
     if black:
         runner.black(black)
+
+    if bandit:
+        runner.bandit(bandit)
 
     runner.report()
 

@@ -17,6 +17,8 @@ Options:
   --help                     Show this message and exit.
 ```
 
+### Example usage
+
 Compile SCSS to CSS:
 
 ```sh
@@ -50,16 +52,16 @@ python runr.py -f .
 Security lint with Bandit:
 
 ```sh
-python runr.py -b .
+python runr.py -b my_app
 ```
 
-#### Requirements
+### Requirements
 
 ```sh
 pip install click rcssmin rjsmin libsass black bandit
 ```
 
-#### Dependencies
+### Dependencies
 
 | Package | Description | Reference |
 | --- | --- | --- |
@@ -70,8 +72,44 @@ pip install click rcssmin rjsmin libsass black bandit
 | black | Python code formatter | <a href="https://github.com/ambv/black">https://github.com/ambv/black</a> |
 | bandit | Python security linter | <a href="https://github.com/PyCQA/bandit">https://github.com/PyCQA/bandit</a> |
 
-#### Extending
+### Extending
 
 - Add a class method to the `Runner class`
 - Add a new `click.option` to the `runr` function
 - Call the new method from the `runr` function
+
+### More examples
+
+Compile SCSS and minify all files:
+
+```sh
+python runr.py --compile scss --minify all
+```
+
+Output:
+
+```pycon
+Runner started
+--------------------
+
+Compiling SCSS to CSS
+--------------------
+src: app/static/scss/style.scss
+dst: app/static/css/style.css
+
+Minifying CSS
+--------------------
+src: app/static/css/style.css
+dst: app/static/css/style.min.css
+
+Minifying JavaScript
+--------------------
+src: app/static/js/app.js
+dst: app/static/js/app.min.js
+
+Runner report
+--------------------
+Tasks complete: 3
+Tasks failed: 0
+Time elapsed: 0.2013 s
+```
